@@ -1,0 +1,190 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="xregister">
+        <xs:complexType mixed="false">
+            <xs:sequence>
+                <xs:element ref="name"/>
+                <xs:element name="dwidth">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:positiveInteger"/>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="awidth">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:positiveInteger"/>
+                    </xs:simpleType>
+                </xs:element>
+
+
+
+                <xs:element maxOccurs="unbounded" ref="word"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="word">
+        <xs:complexType>
+            <xs:sequence maxOccurs="1">
+                <xs:element ref="name">
+                    
+                </xs:element>
+                <xs:element name="address">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:nonNegativeInteger"> </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element maxOccurs="unbounded" ref="reg"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="reg">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="name"/>
+                <xs:element name="comment" minOccurs="0"/>
+                <xs:element ref="width"/>
+                <xs:element ref="offset"/>
+                <xs:element ref="reset.value"/>
+
+                <xs:choice>
+                    <xs:group ref="both.write"/>
+
+                    <xs:group ref="hw.read.sw.write"/>
+                    <xs:group ref="hw.wired"/>
+                    <xs:group ref="constant">
+                        
+                    </xs:group>
+                </xs:choice>
+
+
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="name">
+        <xs:simpleType>
+            <xs:restriction base="xs:ID">
+                <xs:pattern value="[a-zA-Z_][a-zA-Z_0-9]*"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="width">
+        <xs:simpleType>
+            <xs:restriction base="xs:positiveInteger">
+                <xs:minInclusive value="1"/>
+                <xs:maxInclusive value="1024"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="address">
+        <xs:simpleType>
+            <xs:restriction base="xs:nonNegativeInteger"> </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="offset">
+        <xs:simpleType>
+            <xs:restriction base="xs:nonNegativeInteger">
+                <xs:minInclusive value="0"/>
+                <xs:maxInclusive value="1023"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="reset.value">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:pattern value="(\d+|\d+'[bB][01_]+)|(\d+'[dD][0-9_]+)|(\d+'[hH][0-9a-fA-F_]+)"
+                />
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+
+    <xs:element name="ctrl.signal">
+        <xs:simpleType>
+            <xs:restriction base="xs:ID">
+                <xs:pattern value="[a-zA-Z_][a-zA-Z0-9_]*"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="value.signal">
+        <xs:simpleType>
+            <xs:restriction base="xs:ID">
+                <xs:pattern value="[a-zA-Z_][a-zA-Z0-9_]*"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="hw.set.bit.flag"/>
+    <xs:element name="hw.clear.bit.flag"/>
+    <xs:element name="hw.set.value"/>
+    <xs:element name="hw.get.value"/>
+    <xs:element name="hw.wired"/> 
+    <xs:element name="hw.const"/>
+    <xs:element name="sw.read.write"/>
+    <xs:element name="sw.read.only.clear"/>
+    <xs:element name="sw.read.only.write.1.clear"/>
+    <xs:element name="sw.read.only"/>
+    <xs:element name="software.domination"/>
+    <xs:element name="read.indication"/>
+    <xs:element name="write.indication"/>
+    <xs:element name="output"/>
+
+
+
+    <xs:group name="hw.write.access">
+        <xs:choice>
+            <xs:element ref="hw.set.bit.flag"/>
+            <xs:element ref="hw.clear.bit.flag"/>
+            <xs:element ref="hw.set.value"/>
+        </xs:choice>
+    </xs:group>
+    <xs:group name="sw.write.access">
+        <xs:choice>
+            <xs:element ref="sw.read.write"/>
+            <xs:element ref="sw.read.only.clear"/>
+            <xs:element ref="sw.read.only.write.1.clear"/>
+        </xs:choice>
+    </xs:group>
+    <xs:group name="both.write">
+        <xs:sequence>
+            <xs:group ref="hw.write.access"/>
+            <xs:choice>
+                <xs:sequence>
+
+                    <xs:group ref="sw.write.access"/>
+
+                    <xs:element ref="software.domination" minOccurs="0"/>
+                    <xs:element ref="read.indication" minOccurs="0"/>
+                    <xs:element ref="write.indication" minOccurs="0"/>
+
+                </xs:sequence>
+                <xs:sequence>
+                    <xs:element ref="sw.read.only"/>
+                    <xs:element ref="read.indication" minOccurs="0"/>
+
+                </xs:sequence>
+            </xs:choice>
+
+        </xs:sequence>
+    </xs:group>
+
+    <xs:group name="hw.read.sw.write">
+        <xs:sequence>
+            <xs:element ref="hw.get.value"/>
+            <xs:element ref="sw.read.write"/>
+            <xs:element ref="write.indication" minOccurs="0"/>
+            <xs:element ref="read.indication" minOccurs="0"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="hw.wired">
+        <xs:sequence>
+            <xs:element ref="hw.wired"/>
+            <xs:element ref="sw.read.only" minOccurs="0"/>
+            <xs:element ref="read.indication" minOccurs="0"/>
+
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="constant">
+        <xs:sequence>
+            <xs:element ref="hw.const"/>           
+            <xs:element ref="sw.read.only" minOccurs="0"/>
+            <xs:element ref="read.indication" minOccurs="0"/>
+       </xs:sequence>
+</xs:group>
+</xs:schema>
